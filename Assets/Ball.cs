@@ -10,19 +10,29 @@ public class Ball : MonoBehaviour
     private Rigidbody _rigidbody;
     private FinishLevel _finishLevel;
     
-    [SerializeField] private Vector3 ballStartVelocity = new Vector3(0, 0, 0);
+    [SerializeField] private Vector3 ballStartVelocity = new Vector3(-3, 0, -3);
 
     public void Start()
     {
         _ball = GameObject.FindWithTag("ball");
         _ball.AddComponent<FinishLevel>();
         _finishLevel = _ball.GetComponent<FinishLevel>();
+        _ball.AddComponent<Rigidbody>();
+        _rigidbody = _ball.GetComponent<Rigidbody>();
+        ResetBall();
+    }
+
+    private void ResetBall()
+    {
+        ballInitiated = false;
+        _rigidbody.Sleep();
+        _ball.transform.position = new Vector3();
     }
     
     public void InitiateBall()
     {
-        _ball.AddComponent<Rigidbody>();
-        _rigidbody = _ball.GetComponent<Rigidbody>();
+        ResetBall();
+        _rigidbody.WakeUp();
         _rigidbody.velocity = ballStartVelocity;
         GameObject.FindWithTag("start_button").SetActive(false);
         ballInitiated = true;
@@ -40,6 +50,7 @@ public class Ball : MonoBehaviour
         if (ballInitiated && _rigidbody.velocity.magnitude < eps)
         {
             _finishLevel.Lose();
+            ballInitiated = false;
         }
     }
 }
