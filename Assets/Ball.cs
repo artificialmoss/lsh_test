@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
-    [SerializeField] private bool ballInitiated = false;
+    [SerializeField] private bool ballActive = false;
     private GameObject _ball;
-    private Rigidbody _rigidbody;
+    private Rigidbody _rigidBody;
     private FinishLevel _finishLevel;
     
     [SerializeField] private Vector3 ballStartVelocity = new Vector3(-3, 0, -3);
@@ -18,39 +18,39 @@ public class Ball : MonoBehaviour
         _ball.AddComponent<FinishLevel>();
         _finishLevel = _ball.GetComponent<FinishLevel>();
         _ball.AddComponent<Rigidbody>();
-        _rigidbody = _ball.GetComponent<Rigidbody>();
+        _rigidBody = _ball.GetComponent<Rigidbody>();
         ResetBall();
     }
 
     private void ResetBall()
     {
-        ballInitiated = false;
-        _rigidbody.Sleep();
+        ballActive = false;
+        _rigidBody.Sleep();
         _ball.transform.position = new Vector3();
     }
     
     public void InitiateBall()
     {
         ResetBall();
-        _rigidbody.WakeUp();
-        _rigidbody.velocity = ballStartVelocity;
+        _rigidBody.WakeUp();
+        _rigidBody.velocity = ballStartVelocity;
         GameObject.FindWithTag("start_button").SetActive(false);
-        ballInitiated = true;
+        ballActive = true;
     }
 
     public void OnTriggerEnter(Collider other)
     {
-        ballInitiated = false;
+        ballActive = false;
         _finishLevel.Win();
     }
     
     public void Update()
     {
         double eps = 1e-9;
-        if (ballInitiated && _rigidbody.velocity.magnitude < eps)
+        if (ballActive && _rigidBody.velocity.magnitude < eps)
         {
+            ballActive = false;
             _finishLevel.Lose();
-            ballInitiated = false;
         }
     }
 }
